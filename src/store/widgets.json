@@ -1,0 +1,31 @@
+{
+  "categories": [
+    {
+      "id": "1",
+      "name": "CSPM Executive Dashboard",
+      "widgets": [
+        {
+          "id" :"101",
+          "name":"cloud accounts",
+          "data": "loud data"
+        },
+        {
+          "id": "102",
+          "name": "Widget 2",
+          "data": "Random text for Widget 2"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Another Category",
+      "widgets": [
+        {
+          "id": "201",
+          "name": "Widget B",
+          "data": "Random text for Widget A"
+        }
+      ]
+    }
+  ]
+}
