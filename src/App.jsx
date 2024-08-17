@@ -1,61 +1,60 @@
-import './App.css'
-// We are building a basics crud operation thing where
-// we can Add, delete, update,edit
-// json thing which contains widget, each widget has name, description, nanoid.
-// btn to add new widget
-import React from 'react'
-import { nanoid } from 'nanoid'
-
-import initialWidgets from './store/widgets.json'
+import "./App.css";
+import AddWidget from "./components/AddWidget";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { categoryState, dashboardState, modelState, widgetValueState } from "./store/data";
+import { nanoid } from "nanoid";
+import ShowWidget from "./components/ShowWidget";
 
 function App() {
+  const [dashboard, setDashboard] = useRecoilState(dashboardState);
+  const setShowModal = useSetRecoilState(modelState);
+  const [currentCategory, setcurrentCategory] = useRecoilState(categoryState);
+  const inputValues = useRecoilValue(widgetValueState);
 
-  const [dashboard, setDashboard] = React.useState(initialWidgets)
+  const openModal = (key) => {
+    setcurrentCategory(key); //btnclick to save
+    setShowModal(true);
+  };
 
-  const renderWidgets = (widgets) => {
-    return widgets.map((widget) => (
-      <div key={widget.id}>
-        <h3>{widget.name}</h3>
-        <p>{widget.data}</p>
-        </div>
-    ))
+  function addWidget() {
+    if (inputValues.title && inputValues.data && currentCategory) {
+      const newWidget = {
+        id: nanoid(),
+        name: inputValues.title,
+        data: inputValues.data
+      };
+      const updatedDashboard = {
+        ...dashboard,
+        [currentCategory]: {
+          ...dashboard[currentCategory],
+          widgets: [...dashboard[currentCategory].widgets, newWidget],
+        },
+      };
+      setDashboard(updatedDashboard);
+      setShowModal(false);
+    }
   }
 
-  const addNewWidget = (id) => {
-    const newWidget = {
-      id: nanoid(),
-      name: 'New Widget',
-      data: 'Random text for the new widget'
-    };
-    
-    setDashboard((prevData) => ({
-      ...prevData,
-      categories: prevData.categories.map(category => 
-        category.id === id ? 
-        {...category, widgets:[...category.widgets,newWidget]} :
-        category
-      )
-    }))
-  }
 
   return (
-    <div className='main'>
-      <div>
-      {dashboard.categories.map(category => (
-        <div key={category.id} style={{ marginBottom: '20px' }}>
-          <h2>{category.name}</h2>
-          <div style={{ paddingLeft: '20px' }}>
-            {renderWidgets(category.widgets)}
+    <div className="main">
+      <AddWidget onSave={addWidget} />
+      {Object.keys(dashboard).map((categoryKey) => {
+        const category = dashboard[categoryKey];
+        return (
+          <div key={categoryKey} className="container">
+            <h2 className="title">{category.title}</h2>
+            <div className="widgets-container">
+              <ShowWidget category={category} />
+              <button className="btn" onClick={() => openModal(categoryKey)}>
+                Add Widget
+              </button>
+            </div>
           </div>
-          <button onClick={() => addNewWidget(category.id)}>
-            Add Widget
-          </button>
-        </div>
-      ))}
+        );
+      })}
     </div>
-    </div>
-  )
+  );
 }
 
-
-export default App
+export default App;
